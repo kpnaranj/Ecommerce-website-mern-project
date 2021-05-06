@@ -25,22 +25,29 @@ router.post("/signup", (req, res) => {
         lastName,
         email,
         userName,
-        hash_password: password,
+        password,
       });
       // now save parameters and display results
       _user
         .save()
         .then((data) => {
           return res.status(200).json({
-            user: data,
+            //user: data,
+            message: "User created succesfully..!",
           });
         })
         .catch((err) => {
           console.log(err);
+          return res.status(400).json({
+            error: "Something went wrong, try again",
+          });
         });
     })
     .catch((err) => {
       console.log(err);
+      return res.status(400).json({
+        error: "User cannot be found, try again",
+      });
     });
 });
 // Routes put

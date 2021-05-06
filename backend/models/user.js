@@ -1,5 +1,6 @@
 // public libraries
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 // private libraries
 // Create Schema
 const userSchema = new mongoose.Schema(
@@ -51,6 +52,15 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+// Create a virtual environment with elements
+userSchema.virtual("password").set(function (password) {
+  this.hash_password = bcrypt.hashSync(password, 10);
+});
+// Create a method to authenticate elements
+userSchema.methods = {
+  authenticate: async function (password) {
+    return bcrypt.compareSync(password, this.hash_password);
+  },
+};
 // Export elements
 module.exports = mongoose.model("User", userSchema);
