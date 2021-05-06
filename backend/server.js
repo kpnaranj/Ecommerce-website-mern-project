@@ -11,6 +11,7 @@ const port = process.env.PORT || 5000;
 const db = process.env.MONGOURI;
 // Variables and links from files
 const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin/auth");
 // MongoDb database
 mongoose.connect(db, {
   useNewUrlParser: true,
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // user Routes
 app.use("/api", authRoutes);
+app.use("/api", adminRoutes);
 // Listening port
 app.listen(port, () => {
   console.log(`Running on port ${port}`);

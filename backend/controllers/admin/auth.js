@@ -1,7 +1,7 @@
 // public libraries
 const jwt = require("jsonwebtoken");
 // private libraries
-const User = require("../models/user");
+const User = require("../../models/user");
 // Variables
 const secret_key = process.env.KEY_JWT;
 // Functions
@@ -14,7 +14,7 @@ exports.signup = (req, res) => {
       // If user exist, then we send an error, we cannot have two users
       if (user) {
         return res.status(422).json({
-          error: "User already exist, try another email",
+          error: "Admin already exist, try another email",
         });
       }
       // Else, user is not registe, save parameters
@@ -24,21 +24,25 @@ exports.signup = (req, res) => {
         email,
         userName,
         password,
+        role: "admin",
       });
       // now save parameters and display results
       _user
         .save()
         .then((data) => {
-          return res.status(200).json({
-            //user: data,
-            message: "User created succesfully..!",
-          });
+          if (data) {
+            return res.status(200).json({
+              //user: data,
+              message: "Admin created succesfully..!",
+            });
+          }
         })
         .catch((err) => {
-          console.log(err);
-          return res.status(400).json({
-            error: "Something went wrong, try again",
-          });
+          if (err) {
+            return res.status(400).json({
+              error: "Something went wrong, try again",
+            });
+          }
         });
     })
     .catch((err) => {
@@ -54,7 +58,7 @@ exports.signin = (req, res) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
       // Authenticate user
-      if (user.authenticate(req.body.password)) {
+      if (user.authenticate(req.body.password) && user.role === "admin") {
         // if password is similar create a token
         // a token has a payload, secret key and limit time
         const token = jwt.sign({ _id: user._id }, secret_key, {
