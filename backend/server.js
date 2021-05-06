@@ -10,7 +10,7 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 const db = process.env.MONGOURI;
 // Variables and links from files
-const userRoutes = require("./routes/user");
+const authRoutes = require("./routes/auth");
 // MongoDb database
 mongoose.connect(db, {
   useNewUrlParser: true,
@@ -31,7 +31,7 @@ mongoose.connection
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // user Routes
-app.use("/api", userRoutes);
+app.use("/api", authRoutes);
 // Listening port
 app.listen(port, () => {
   console.log(`Running on port ${port}`);
