@@ -53,41 +53,37 @@ exports.signin = (req, res) => {
   // Check if user already exists
   User.findOne({ email: req.body.email })
     .then((user) => {
-      // if user is authenticated
-      if (user) {
-        // Check if user password is correct
-        if (user.authenticate(req.body.password)) {
-          console.log(user);
-        } else {
-          console.log("it didnt work");
-        }
-        return res.status(200).json({
-          message: "it worked",
+      // Authenticate user
+      if (user.authenticate(req.body.password)) {
+        // if password is similar create a token
+        // a token has a payload, secret key and limit time
+        const token = jwt.sign({ _id: user._id }, secret_key, {
+          expiresIn: "1d",
         });
-        /* if (user.authenticate(password)) {
-          // if user is authenticate use a token
-          // A token uses a payload, a secret key, and a expired date
-          const token = jwt.sign({ _id: user._id }, secret_key, {
-            expiresIn: "1h",
-          });
-          console.log(token);
-          // Once we gave a user token we can destructure elements
-          const { firstName, lastName, email, role, fullName } = user;
-          // Finally send the elements from the signin page
-          res.status(201).json({
-            token,
-            user: { firstName, lastName, email, role, fullName },
-          });
-        } else {
-          return res
-            .status(400)
-            .json({ message: "Invalid password, try again" });
-        } */
+        // finally return result of elements destructure elements
+        const { _id, firstName, lastName, email, role, fullName } = user;
+        return res.status(201).json({
+          token,
+          user: {
+            _id,
+            firstName,
+            lastName,
+            email,
+            role,
+            fullName,
+          },
+        });
+      } else {
+        return res.status(400).json({
+          message: "The given password is incorrect, try again",
+        });
       }
     })
     .catch((err) => {
       if (err) {
-        return res.status(400).json({ error: "The email is not here" });
+        return res
+          .status(400)
+          .json({ error: "Something went wrong, plese try again later" });
       }
     });
 };
